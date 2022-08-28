@@ -1,0 +1,16 @@
+body {
+    margin: 0;
+}
+
+.board {
+    display: grid;
+    justify-content: center;
+    margin: 50px;
+}
+
+.slot {
+    height: 100px;
+    width: 100px;
+    background-color: cyan;
+    border: 1px solid black;
+}
