@@ -13,4 +13,9 @@ body {
     width: 100px;
     background-color: cyan;
     border: 1px solid black;
+    text-align: center;
+}
+
+.slot:hover {
+    background-color: aquamarine;
 }

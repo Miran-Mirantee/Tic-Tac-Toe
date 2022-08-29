@@ -1,10 +1,21 @@
 const gameBoard = (function(doc) {
-    let _board = {
-        first: ['o', 'o', 'o'],
-        second: ['o', 'o', 'o'],
-        third: ['o', 'o', 'o'],
+    const _board = {
+        0: ['y', 'o', 'u'],
+        1: ['a', 'r', 'e'],
+        2: ['d', 'e', 'd'],
     };
+
+    // const _clear = function() {
+    //     if (!!doc && "querySelector" in doc) {
+    //         const boardDiv = doc.querySelector('.board');
+    //         if (boardDiv)
+    //             doc.body.removeChild(boardDiv);  
+    //     }
+    // }
+
     const _display = (function() {
+        // _clear();
+
         if (!!doc && "querySelector" in doc) {
             const boardDiv = doc.createElement('div');
             boardDiv.classList.add('board');
@@ -18,9 +29,27 @@ const gameBoard = (function(doc) {
                     slotDiv.setAttribute('data-column', j); 
                     slotDiv.style.gridRowStart = i + 1;
                     slotDiv.style.gridColumnStart = j + 1;
+                    slotDiv.textContent = _board[i][j];
                     boardDiv.appendChild(slotDiv);
                 }
+            }  
+        }
+    })();
+
+    const _controller = (function() {
+        if (!!doc && "querySelector" in doc) {
+            const slots = doc.querySelectorAll('.slot');
+            for (const slot of slots) {
+                slot.addEventListener('click', () => {
+                    _board[slot.dataset.row][slot.dataset.column] = 'X';
+                    slot.textContent = 'X';
+                });
             }
         }
     })();
+
+    // temp
+    return {
+        _board,
+    }
 })(document);   
