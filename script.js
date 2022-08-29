@@ -1,9 +1,11 @@
 const gameBoard = (function(doc) {
     const _board = {
-        0: ['y', 'o', 'u'],
-        1: ['a', 'r', 'e'],
-        2: ['d', 'e', 'd'],
+        0: ['', '', ''],
+        1: ['', '', ''],
+        2: ['', '', ''],
     };
+
+    let player1Turn = true;
 
     // const _clear = function() {
     //     if (!!doc && "querySelector" in doc) {
@@ -41,8 +43,14 @@ const gameBoard = (function(doc) {
             const slots = doc.querySelectorAll('.slot');
             for (const slot of slots) {
                 slot.addEventListener('click', () => {
-                    _board[slot.dataset.row][slot.dataset.column] = 'X';
-                    slot.textContent = 'X';
+                    let currentPlayer;
+                    if (player1Turn ? currentPlayer = player1 : currentPlayer = player2)
+
+                    if (slot.textContent == '') {
+                        _board[slot.dataset.row][slot.dataset.column] = currentPlayer.playerCharacter;
+                        slot.textContent = currentPlayer.playerCharacter;
+                        player1Turn = !player1Turn;
+                    }
                 });
             }
         }
@@ -51,5 +59,15 @@ const gameBoard = (function(doc) {
     // temp
     return {
         _board,
-    }
+    };
 })(document);   
+
+const playerCreator = (name, playerCharacter) => {
+    return {
+        name,
+        playerCharacter,
+    };
+};
+
+const player1 = playerCreator('player1', 'O');
+const player2 = playerCreator('player2', 'X');
