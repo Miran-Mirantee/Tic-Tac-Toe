@@ -5,7 +5,7 @@ const gameBoard = (function(doc) {
         2: ['', '', ''],
     };
 
-    let player1Turn = true;
+    let _player1Turn = true;
 
     // const _clear = function() {
     //     if (!!doc && "querySelector" in doc) {
@@ -38,19 +38,57 @@ const gameBoard = (function(doc) {
         }
     })();
 
+    const _checkWinner = function() {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {                
+                if (_board[i][j] != '') {
+                    // check horizontally
+                    if (_board[i][j + 1] != undefined && _board[i][j] == _board[i][j + 1]) {
+                        if (_board[i][j + 2] != undefined && _board[i][j] == _board[i][j + 2]) {
+                            console.log(`we got em horizontally`);
+                        }
+                    }
+                    if (_board[i + 1] != undefined && _board[i + 2] != undefined) {
+                        // check vertically
+                        if (_board[i][j] == _board[i + 1][j]) {
+                            if (_board[i][j] == _board[i + 2][j]) {
+                                console.log(`we got em vertically`);
+                            }
+                        }
+                        // check left diagonally
+                        if (_board[i][j] == _board[i + 1][j + 1]) {
+                            if (_board[i][j] == _board[i + 2][j + 2]) {
+                                console.log(`we got em left diagonally`);
+                            }
+                        }
+                        // check right diagonally 
+                        if (_board[i][j] == _board[i + 1][j - 1]) {
+                            if (_board[i][j] == _board[i + 2][j - 2]) {
+                                console.log(`we got em right diagonally`);
+                            }
+                        }
+
+                    }
+                }
+
+            }
+        }
+    };
+
     const _controller = (function() {
         if (!!doc && "querySelector" in doc) {
             const slots = doc.querySelectorAll('.slot');
             for (const slot of slots) {
                 slot.addEventListener('click', () => {
                     let currentPlayer;
-                    if (player1Turn ? currentPlayer = player1 : currentPlayer = player2)
+                    if (_player1Turn ? currentPlayer = player1 : currentPlayer = player2)
 
                     if (slot.textContent == '') {
                         _board[slot.dataset.row][slot.dataset.column] = currentPlayer.playerCharacter;
                         slot.textContent = currentPlayer.playerCharacter;
-                        player1Turn = !player1Turn;
+                        _player1Turn = !_player1Turn;
                     }
+                    _checkWinner();
                 });
             }
         }
