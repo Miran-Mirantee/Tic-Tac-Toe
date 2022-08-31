@@ -6,6 +6,8 @@ const gameBoard = (function(doc) {
     };
 
     let _player1Turn = true;
+    let gameWinner;
+
 
     // const _clear = function() {
     //     if (!!doc && "querySelector" in doc) {
@@ -45,32 +47,30 @@ const gameBoard = (function(doc) {
                     // check horizontally
                     if (_board[i][j + 1] != undefined && _board[i][j] == _board[i][j + 1]) {
                         if (_board[i][j + 2] != undefined && _board[i][j] == _board[i][j + 2]) {
-                            console.log(`we got em horizontally`);
+                            return _winner = _board[i][j];
                         }
                     }
                     if (_board[i + 1] != undefined && _board[i + 2] != undefined) {
                         // check vertically
                         if (_board[i][j] == _board[i + 1][j]) {
                             if (_board[i][j] == _board[i + 2][j]) {
-                                console.log(`we got em vertically`);
+                                return _winner = _board[i][j];
                             }
                         }
                         // check left diagonally
                         if (_board[i][j] == _board[i + 1][j + 1]) {
                             if (_board[i][j] == _board[i + 2][j + 2]) {
-                                console.log(`we got em left diagonally`);
+                                return _winner = _board[i][j];
                             }
                         }
                         // check right diagonally 
                         if (_board[i][j] == _board[i + 1][j - 1]) {
                             if (_board[i][j] == _board[i + 2][j - 2]) {
-                                console.log(`we got em right diagonally`);
+                                return _winner = _board[i][j];
                             }
                         }
-
                     }
                 }
-
             }
         }
     };
@@ -81,24 +81,38 @@ const gameBoard = (function(doc) {
             for (const slot of slots) {
                 slot.addEventListener('click', () => {
                     let currentPlayer;
-                    if (_player1Turn ? currentPlayer = player1 : currentPlayer = player2)
+                    _player1Turn ? currentPlayer = player1 : currentPlayer = player2;
 
                     if (slot.textContent == '') {
                         _board[slot.dataset.row][slot.dataset.column] = currentPlayer.playerCharacter;
                         slot.textContent = currentPlayer.playerCharacter;
                         _player1Turn = !_player1Turn;
                     }
-                    _checkWinner();
+
+                    if (_checkWinner()) {
+                        gameWinner = currentPlayer;
+                        ui.congratulate(gameWinner.name);   
+                    }
                 });
             }
         }
     })();
 
-    // temp
     return {
-        _board,
+        gameWinner,
     };
 })(document);   
+
+const ui = (function(doc) {
+    function congratulate(player) {
+        console.log(`${player} is the winner!`);
+    }
+
+    return {
+        congratulate,
+    };
+})(document);
+
 
 const playerCreator = (name, playerCharacter) => {
     return {
