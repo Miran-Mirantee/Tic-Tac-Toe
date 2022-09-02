@@ -1,5 +1,5 @@
 const gameBoard = (function(doc) {
-    const _board = {
+    let _board = {
         0: ['', '', ''],
         1: ['', '', ''],
         2: ['', '', ''],
@@ -8,22 +8,29 @@ const gameBoard = (function(doc) {
     let _player1Turn = true;
     let gameWinner;
 
-
-    // const _clear = function() {
-    //     if (!!doc && "querySelector" in doc) {
-    //         const boardDiv = doc.querySelector('.board');
-    //         if (boardDiv)
-    //             doc.body.removeChild(boardDiv);  
-    //     }
-    // }
-
-    const _display = (function() {
-        // _clear();
-
+    const clear = function() {
         if (!!doc && "querySelector" in doc) {
+            const boardDiv = doc.querySelector('.board');
+            if (boardDiv) {
+                doc.body.removeChild(boardDiv);  
+                _board = {
+                    0: ['', '', ''],
+                    1: ['', '', ''],
+                    2: ['', '', ''],
+                };
+                _display();
+                _controller();
+                gameWinner = '';
+            }
+        }
+    }
+
+    const _display = function() {
+         if (!!doc && "querySelector" in doc) {
             const boardDiv = doc.createElement('div');
+            const restartBtn = doc.querySelector('.restart-btn');
             boardDiv.classList.add('board');
-            doc.body.appendChild(boardDiv);
+            restartBtn.before(boardDiv);
             
             for (let i = 0; i < 3; i++) {
                 for (let j = 0; j < 3; j++) {
@@ -38,7 +45,8 @@ const gameBoard = (function(doc) {
                 }
             }  
         }
-    })();
+    };
+    _display();
 
     const _checkWinner = function() {
         for (let i = 0; i < 3; i++) {
@@ -75,38 +83,48 @@ const gameBoard = (function(doc) {
         }
     };
 
-    const _controller = (function() {
+    const _controller = function() {
         if (!!doc && "querySelector" in doc) {
             const slots = doc.querySelectorAll('.slot');
             for (const slot of slots) {
                 slot.addEventListener('click', () => {
-                    let currentPlayer;
-                    _player1Turn ? currentPlayer = player1 : currentPlayer = player2;
-
-                    if (slot.textContent == '') {
-                        _board[slot.dataset.row][slot.dataset.column] = currentPlayer.playerCharacter;
-                        slot.textContent = currentPlayer.playerCharacter;
-                        _player1Turn = !_player1Turn;
-                    }
-
-                    if (_checkWinner()) {
-                        gameWinner = currentPlayer;
-                        ui.congratulate(gameWinner.name);   
+                    if (!gameWinner) {
+                        let currentPlayer;
+                        _player1Turn ? currentPlayer = player1 : currentPlayer = player2;
+    
+                        if (slot.textContent == '') {
+                            _board[slot.dataset.row][slot.dataset.column] = currentPlayer.playerCharacter;
+                            slot.textContent = currentPlayer.playerCharacter;
+                            _player1Turn = !_player1Turn;
+                        }
+                        if (_checkWinner()) {
+                            gameWinner = currentPlayer;
+                            ui.congratulate(gameWinner.name);   
+                        }
                     }
                 });
             }
         }
-    })();
+    };
+    _controller();
 
     return {
         gameWinner,
+        clear,
     };
 })(document);   
 
 const ui = (function(doc) {
-    function congratulate(player) {
+    const congratulate = function(player) {
         console.log(`${player} is the winner!`);
-    }
+    };
+
+    const restart = (function() {
+        const restartBtn = doc.querySelector('.restart-btn');
+        restartBtn.addEventListener('click', () => {
+            gameBoard.clear();
+        });
+    })();
 
     return {
         congratulate,
