@@ -2,7 +2,12 @@ body {
     margin: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 8px;
+}
+
+.player-info {
+    display: flex;
+    justify-content: space-around;
 }
 
 .board {
@@ -21,4 +26,12 @@ body {
 
 .slot:hover {
     background-color: aquamarine;
+}
+
+.restart-btn {
+    align-self: center;
+}
+
+.display-message {
+    align-self: center;
 }

@@ -1,5 +1,5 @@
 const gameBoard = (function(doc) {
-    let _board = {
+    const _board = {
         0: ['', '', ''],
         1: ['', '', ''],
         2: ['', '', ''],
@@ -11,16 +11,18 @@ const gameBoard = (function(doc) {
     const clear = function() {
         if (!!doc && "querySelector" in doc) {
             const boardDiv = doc.querySelector('.board');
+            const displayMessage = doc.querySelector('.display-message');
             if (boardDiv) {
                 doc.body.removeChild(boardDiv);  
-                _board = {
-                    0: ['', '', ''],
-                    1: ['', '', ''],
-                    2: ['', '', ''],
-                };
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        _board[i][j] = '';
+                    }
+                }
                 _display();
                 _controller();
                 gameWinner = '';
+                displayMessage.textContent = '';
             }
         }
     }
@@ -83,6 +85,16 @@ const gameBoard = (function(doc) {
         }
     };
 
+    const _checkTie = function() {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (_board[i][j] == '')
+                    return false;
+            }
+        }
+        return true;
+    };
+
     const _controller = function() {
         if (!!doc && "querySelector" in doc) {
             const slots = doc.querySelectorAll('.slot');
@@ -99,7 +111,11 @@ const gameBoard = (function(doc) {
                         }
                         if (_checkWinner()) {
                             gameWinner = currentPlayer;
-                            ui.congratulate(gameWinner.name);   
+                            ui.congratulate(gameWinner);   
+                        }
+                        if (!_checkWinner() && _checkTie()) {
+                            const displayMessage = doc.querySelector('.display-message');
+                            displayMessage.textContent = `Tie!`;
                         }
                     }
                 });
@@ -116,28 +132,49 @@ const gameBoard = (function(doc) {
 
 const ui = (function(doc) {
     const congratulate = function(player) {
-        console.log(`${player} is the winner!`);
+        const displayMessage = doc.querySelector('.display-message');
+        player.won++;
+        displayMessage.innerHTML = `${player.name} is the winner!`;
+        playerInfo();
     };
 
-    const restart = (function() {
+    const _restart = (function() {
         const restartBtn = doc.querySelector('.restart-btn');
         restartBtn.addEventListener('click', () => {
             gameBoard.clear();
         });
     })();
 
+    const playerInfo = function() {
+        const player1Name = doc.querySelector('.player1-name');
+        const player2Name = doc.querySelector('.player2-name');
+        const player1Marker = doc.querySelector('.player1-marker');
+        const player2Marker = doc.querySelector('.player2-marker');
+        const player1WonCount = doc.querySelector('.player1-won');
+        const player2WonCount = doc.querySelector('.player2-won');
+        player1Name.textContent = `Player1: ${player1.name}`;
+        player2Name.textContent = `Player2: ${player2.name}`;
+        player1Marker.textContent = `Marker: ${player1.playerCharacter}`;
+        player2Marker.textContent = `Marker: ${player2.playerCharacter}`;
+        player1WonCount.textContent = `Score: ${player1.won}`;
+        player2WonCount.textContent = `Score: ${player2.won}`;
+    };
+
     return {
         congratulate,
+        playerInfo,
     };
 })(document);
-
 
 const playerCreator = (name, playerCharacter) => {
     return {
         name,
         playerCharacter,
+        won: 0,
     };
 };
 
 const player1 = playerCreator('player1', 'O');
 const player2 = playerCreator('player2', 'X');
+
+ui.playerInfo();
