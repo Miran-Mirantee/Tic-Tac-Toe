@@ -102,7 +102,7 @@ const gameBoard = (function(doc) {
                 slot.addEventListener('click', () => {
                     if (!gameWinner) {
                         let currentPlayer;
-                        _player1Turn ? currentPlayer = player1 : currentPlayer = player2;
+                        _player1Turn ? currentPlayer = players.player1 : currentPlayer = players.player2;
     
                         if (slot.textContent == '') {
                             _board[slot.dataset.row][slot.dataset.column] = currentPlayer.playerCharacter;
@@ -134,7 +134,7 @@ const ui = (function(doc) {
     const congratulate = function(player) {
         const displayMessage = doc.querySelector('.display-message');
         player.won++;
-        displayMessage.innerHTML = `${player.name} is the winner!`;
+        displayMessage.textContent = `${player.name} is the winner!`;
         playerInfo();
     };
 
@@ -146,23 +146,31 @@ const ui = (function(doc) {
     })();
 
     const playerInfo = function() {
-        const player1Name = doc.querySelector('.player1-name');
-        const player2Name = doc.querySelector('.player2-name');
         const player1Marker = doc.querySelector('.player1-marker');
         const player2Marker = doc.querySelector('.player2-marker');
         const player1WonCount = doc.querySelector('.player1-won');
         const player2WonCount = doc.querySelector('.player2-won');
-        player1Name.textContent = `Player1: ${player1.name}`;
-        player2Name.textContent = `Player2: ${player2.name}`;
-        player1Marker.textContent = `Marker: ${player1.playerCharacter}`;
-        player2Marker.textContent = `Marker: ${player2.playerCharacter}`;
-        player1WonCount.textContent = `Score: ${player1.won}`;
-        player2WonCount.textContent = `Score: ${player2.won}`;
+        player1Marker.textContent = `Marker: ${players.player1.playerCharacter}`;
+        player2Marker.textContent = `Marker: ${players.player2.playerCharacter}`;
+        player1WonCount.textContent = `Score: ${players.player1.won}`;
+        player2WonCount.textContent = `Score: ${players.player2.won}`;
     };
+
+    const changeName = (function() {
+        const changeNameBtns = doc.querySelectorAll('.change-name-btn');
+        for (const changeNameBtn of changeNameBtns) {
+            changeNameBtn.addEventListener('click', () => {
+                const player = changeNameBtn.dataset.player;
+                const input = doc.getElementById(`${player}-name`);
+                input.value ? players[player].name = input.value : players[player].name = player;
+            });
+        }
+    })();
 
     return {
         congratulate,
         playerInfo,
+        changeName,
     };
 })(document);
 
@@ -174,7 +182,10 @@ const playerCreator = (name, playerCharacter) => {
     };
 };
 
-const player1 = playerCreator('player1', 'O');
-const player2 = playerCreator('player2', 'X');
+const players = {
+    player1: playerCreator('player1', 'O'),
+    player2: playerCreator('player2', 'X'),
+};
 
 ui.playerInfo();
+
