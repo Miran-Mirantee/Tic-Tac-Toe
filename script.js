@@ -5,9 +5,10 @@ const gameBoard = (function(doc) {
         2: ['', '', ''],
     };
 
-    let _player1Turn = true;
+    let player1Turn = true;
     let gameWinner;
 
+    // clear the old board and call new one
     const clear = function() {
         if (!!doc && "querySelector" in doc) {
             const boardDiv = doc.querySelector('.board');
@@ -23,10 +24,12 @@ const gameBoard = (function(doc) {
                 _controller();
                 gameWinner = '';
                 displayMessage.textContent = '';
+                ui.displayTurn(!player1Turn);
             }
         }
     }
 
+    // display the board
     const _display = function() {
          if (!!doc && "querySelector" in doc) {
             const boardDiv = doc.createElement('div');
@@ -50,6 +53,7 @@ const gameBoard = (function(doc) {
     };
     _display();
 
+    // check for the winner
     const _checkWinner = function() {
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {                
@@ -85,6 +89,7 @@ const gameBoard = (function(doc) {
         }
     };
 
+    // check if the result is tie
     const _checkTie = function() {
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
@@ -95,19 +100,22 @@ const gameBoard = (function(doc) {
         return true;
     };
 
+    // control which tile to display which player's marker when clicked
+    // control the flow of the game
     const _controller = function() {
         if (!!doc && "querySelector" in doc) {
             const slots = doc.querySelectorAll('.slot');
+            let currentPlayer;
+            
             for (const slot of slots) {
                 slot.addEventListener('click', () => {
                     if (!gameWinner) {
-                        let currentPlayer;
-                        _player1Turn ? currentPlayer = players.player1 : currentPlayer = players.player2;
-    
+                        player1Turn ? currentPlayer = players.player1 : currentPlayer = players.player2;
+                        ui.displayTurn(player1Turn);
                         if (slot.textContent == '') {
                             _board[slot.dataset.row][slot.dataset.column] = currentPlayer.playerCharacter;
                             slot.textContent = currentPlayer.playerCharacter;
-                            _player1Turn = !_player1Turn;
+                            player1Turn = !player1Turn;
                         }
                         if (_checkWinner()) {
                             gameWinner = currentPlayer;
@@ -127,10 +135,12 @@ const gameBoard = (function(doc) {
     return {
         gameWinner,
         clear,
+        player1Turn,
     };
 })(document);   
 
 const ui = (function(doc) {
+    // congratulate the winner
     const congratulate = function(player) {
         const displayMessage = doc.querySelector('.display-message');
         player.won++;
@@ -138,6 +148,7 @@ const ui = (function(doc) {
         playerInfo();
     };
 
+    // restart the game
     const _restart = (function() {
         const restartBtn = doc.querySelector('.restart-btn');
         restartBtn.addEventListener('click', () => {
@@ -145,6 +156,7 @@ const ui = (function(doc) {
         });
     })();
 
+    // display player information
     const playerInfo = function() {
         const player1Marker = doc.querySelector('.player1-marker');
         const player2Marker = doc.querySelector('.player2-marker');
@@ -156,7 +168,8 @@ const ui = (function(doc) {
         player2WonCount.textContent = `Score: ${players.player2.won}`;
     };
 
-    const changeName = (function() {
+    // change player's name
+    const _changeName = (function() {
         const changeNameBtns = doc.querySelectorAll('.change-name-btn');
         for (const changeNameBtn of changeNameBtns) {
             changeNameBtn.addEventListener('click', () => {
@@ -167,10 +180,18 @@ const ui = (function(doc) {
         }
     })();
 
+    // display the player's turn
+    const displayTurn = function(playerTurn) {
+        const displayMessage = doc.querySelector('.display-message');
+        let currentPlayer;
+        !playerTurn ? currentPlayer = players.player1 : currentPlayer = players.player2;
+        displayMessage.textContent = `${currentPlayer.name}'s turn!`;
+    }
+
     return {
         congratulate,
         playerInfo,
-        changeName,
+        displayTurn,
     };
 })(document);
 
@@ -188,4 +209,4 @@ const players = {
 };
 
 ui.playerInfo();
-
+ui.displayTurn(!gameBoard.player1Turn);
